@@ -12,8 +12,12 @@ export function LangToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) =
       className="lang-switch"
       onClick={() => setLang(lang === "th" ? "en" : "th")}
     >
-      <span className="lang-switch-label">TH</span>
-      <span className="lang-switch-label">EN</span>
+      <span className="lang-switch-label" style={{ visibility: lang === "en" ? "visible" : "hidden" }}>
+        TH
+      </span>
+      <span className="lang-switch-label" style={{ visibility: lang === "th" ? "visible" : "hidden" }}>
+        EN
+      </span>
       <span className={`lang-switch-thumb ${lang === "en" ? "lang-switch-thumb-en" : ""}`}>
         {lang === "th" ? "TH" : "EN"}
       </span>
