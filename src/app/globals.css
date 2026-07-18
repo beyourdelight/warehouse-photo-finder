@@ -233,7 +233,7 @@ input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 88px;
+  width: 96px;
   height: 44px;
   padding: 0 10px;
   background: #f3e8ff;
@@ -242,8 +242,10 @@ input {
   cursor: pointer;
 }
 
-.lang-switch-flag {
-  font-size: 20px;
+.lang-switch-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-dark);
   line-height: 1;
   z-index: 1;
 }
@@ -252,11 +254,16 @@ input {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 34px;
+  width: 44px;
   height: 34px;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid var(--primary);
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   transition: transform 0.18s ease;
 }
