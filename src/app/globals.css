@@ -233,9 +233,9 @@ input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 64px;
-  height: 32px;
-  padding: 0 6px;
+  width: 88px;
+  height: 44px;
+  padding: 0 10px;
   background: #f3e8ff;
   border: 2px solid var(--primary);
   border-radius: 999px;
@@ -243,17 +243,17 @@ input {
 }
 
 .lang-switch-flag {
-  font-size: 14px;
+  font-size: 20px;
   line-height: 1;
   z-index: 1;
 }
 
 .lang-switch-thumb {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 24px;
-  height: 24px;
+  top: 3px;
+  left: 3px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: #fff;
   border: 2px solid var(--primary);
@@ -262,7 +262,7 @@ input {
 }
 
 .lang-switch-thumb-en {
-  transform: translateX(32px);
+  transform: translateX(44px);
 }
 
 .btn-back {
@@ -287,8 +287,8 @@ input {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
 .thumb {
@@ -317,9 +317,9 @@ input {
   background: rgba(124, 58, 237, 0.85);
   color: #fff;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 16px;
   text-align: center;
-  padding: 2px 0;
+  padding: 6px 0;
 }
 
 .upload-thumb {
@@ -375,11 +375,52 @@ input {
   z-index: 50;
 }
 
-.lightbox img {
+.lightbox-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.lightbox-stage img {
   max-width: 100%;
   max-height: 75dvh;
   border-radius: 8px;
   object-fit: contain;
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--primary-dark);
+  font-size: 30px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.lightbox-nav-prev {
+  left: -8px;
+}
+
+.lightbox-nav-next {
+  right: -8px;
+}
+
+.lightbox-counter {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .btn-delete {

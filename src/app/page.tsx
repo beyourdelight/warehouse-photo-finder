@@ -14,7 +14,7 @@ export default function HomePage() {
   const [results, setResults] = useState<Item[] | null>(null);
   const [recent, setRecent] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
-  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deletingCode, setDeletingCode] = useState(false);
   const [hasMore, setHasMore] = useState(false);
@@ -101,7 +101,7 @@ export default function HomePage() {
     });
     setDeleting(false);
     if (res.ok) {
-      setLightbox(null);
+      setLightboxIndex(null);
       setResults((prev) => (prev ? prev.filter((it) => it.url !== url) : prev));
       setRecent((prev) => prev.filter((it) => it.url !== url));
     }
@@ -165,8 +165,8 @@ export default function HomePage() {
           </button>
           <h2 className="section-title">{t.resultsTitle(searched ?? "", results.length)}</h2>
           <div className="grid">
-            {results.map((item) => (
-              <button key={item.url} className="thumb" onClick={() => setLightbox(item.url)}>
+            {results.map((item, i) => (
+              <button key={item.url} className="thumb" onClick={() => setLightboxIndex(i)}>
                 <img src={item.url} alt={`${searched}`} loading="lazy" />
               </button>
             ))}
@@ -200,15 +200,40 @@ export default function HomePage() {
         </section>
       )}
 
-      {lightbox && (
-        <div className="lightbox" onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="" onClick={(e) => e.stopPropagation()} />
+      {lightboxIndex !== null && results && results[lightboxIndex] && (
+        <div className="lightbox" onClick={() => setLightboxIndex(null)}>
+          <div className="lightbox-stage" onClick={(e) => e.stopPropagation()}>
+            {lightboxIndex > 0 && (
+              <button
+                className="lightbox-nav lightbox-nav-prev"
+                onClick={() => setLightboxIndex((i) => (i !== null ? i - 1 : i))}
+                aria-label="prev"
+              >
+                ‹
+              </button>
+            )}
+            <img src={results[lightboxIndex].url} alt="" />
+            {lightboxIndex < results.length - 1 && (
+              <button
+                className="lightbox-nav lightbox-nav-next"
+                onClick={() => setLightboxIndex((i) => (i !== null ? i + 1 : i))}
+                aria-label="next"
+              >
+                ›
+              </button>
+            )}
+          </div>
+          {results.length > 1 && (
+            <p className="lightbox-counter">
+              {lightboxIndex + 1} / {results.length}
+            </p>
+          )}
           <button
             className="btn-delete"
             disabled={deleting}
             onClick={(e) => {
               e.stopPropagation();
-              deleteImage(lightbox);
+              deleteImage(results[lightboxIndex].url);
             }}
           >
             {deleting ? t.deletingPhoto : t.deletePhoto}
