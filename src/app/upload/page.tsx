@@ -106,7 +106,6 @@ export default function UploadPage() {
         ref={inputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         multiple
         className="file-input"
         disabled={code.length !== 4 || busy}
