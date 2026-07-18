@@ -2,10 +2,13 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLang } from "@/lib/i18n";
+import { LangToggle } from "@/lib/LangToggle";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { lang, setLang, t } = useLang();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -25,7 +28,7 @@ function LoginForm() {
 
     if (!res.ok) {
       const data = await res.json().catch(() => null);
-      setError(data?.error ?? "เข้าสู่ระบบไม่สำเร็จ");
+      setError(data?.error ?? t.loginFailed);
       return;
     }
 
@@ -36,21 +39,24 @@ function LoginForm() {
 
   return (
     <div className="page-center">
+      <div style={{ position: "absolute", top: 16, right: 16 }}>
+        <LangToggle lang={lang} setLang={setLang} />
+      </div>
       <form className="card" onSubmit={onSubmit}>
-        <h1 className="title">คลังสินค้า</h1>
-        <p className="subtitle">กรอกรหัสผ่านเพื่อเข้าใช้งาน</p>
+        <h1 className="title">{t.loginTitle}</h1>
+        <p className="subtitle">{t.loginSubtitle}</p>
         <input
           type="password"
           inputMode="text"
           autoFocus
           className="input-lg"
-          placeholder="รหัสผ่าน"
+          placeholder={t.passwordPlaceholder}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         {error && <p className="error-text">{error}</p>}
         <button type="submit" className="btn-primary" disabled={loading || !password}>
-          {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+          {loading ? t.loggingIn : t.loginBtn}
         </button>
       </form>
     </div>

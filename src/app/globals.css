@@ -68,6 +68,7 @@ input {
 }
 
 .page-center {
+  position: relative;
   min-height: 100dvh;
   display: flex;
   align-items: center;
@@ -144,14 +145,41 @@ input {
   margin-bottom: 8px;
 }
 
-.file-input {
-  display: block;
-  width: 100%;
-  padding: 16px;
-  border-radius: 12px;
-  border: 3px dashed var(--primary);
-  background: #faf5ff;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.upload-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 16px;
+}
+
+.btn-secondary-lg {
+  background: var(--card-bg);
+  color: var(--primary-dark);
+  border: 3px solid var(--primary);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  width: 100%;
+  cursor: pointer;
+}
+
+.btn-secondary-lg:disabled,
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-primary {
@@ -168,10 +196,6 @@ input {
 
 .btn-primary:active {
   background: var(--primary-dark);
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
 }
 
 .btn-secondary {
@@ -202,6 +226,17 @@ input {
   text-align: center;
   font-size: 17px;
   padding: 32px 0;
+}
+
+.lang-toggle {
+  background: var(--card-bg);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .btn-back {
@@ -329,6 +364,24 @@ input {
   padding: 12px 24px;
   font-size: 15px;
   font-weight: 600;
+}
+
+.btn-delete-code {
+  display: block;
+  width: 100%;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.btn-delete-code:disabled {
+  opacity: 0.5;
 }
 
 html {

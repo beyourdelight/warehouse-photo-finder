@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { upload } from "@vercel/blob/client";
 import imageCompression from "browser-image-compression";
+import { useLang } from "@/lib/i18n";
+import { LangToggle } from "@/lib/LangToggle";
 
 type PreviewItem = { name: string; url: string; status: "compressing" | "uploading" | "done" | "error" };
 
@@ -12,11 +14,13 @@ function randomId() {
 }
 
 export default function UploadPage() {
+  const { lang, setLang, t } = useLang();
   const [code, setCode] = useState("");
   const [items, setItems] = useState<PreviewItem[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const libraryInputRef = useRef<HTMLInputElement>(null);
 
   function onCodeChange(v: string) {
     setCode(v.replace(/\D/g, "").slice(0, 4));
@@ -25,7 +29,7 @@ export default function UploadPage() {
   async function onFilesSelected(fileList: FileList | null) {
     if (!fileList || fileList.length === 0) return;
     if (!/^\d{4}$/.test(code)) {
-      setError("กรอกรหัส 4 หลักก่อนเลือกรูป");
+      setError(t.errorEnterCode);
       return;
     }
     setError(null);
@@ -75,19 +79,25 @@ export default function UploadPage() {
     setCode("");
     setItems([]);
     setError(null);
-    if (inputRef.current) inputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
+    if (libraryInputRef.current) libraryInputRef.current.value = "";
   }
+
+  const codeReady = code.length === 4 && !busy;
 
   return (
     <div className="container">
       <header className="topbar">
-        <h1 className="app-title">อัพโหลดรูป</h1>
-        <Link href="/" className="btn-secondary">
-          ค้นหา
-        </Link>
+        <h1 className="app-title">{t.uploadTitle}</h1>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <LangToggle lang={lang} setLang={setLang} />
+          <Link href="/" className="btn-secondary">
+            {t.searchBack}
+          </Link>
+        </div>
       </header>
 
-      <label className="field-label">รหัสสินค้า (4 หลัก)</label>
+      <label className="field-label">{t.codeLabel}</label>
       <input
         type="tel"
         inputMode="numeric"
@@ -95,7 +105,7 @@ export default function UploadPage() {
         maxLength={4}
         autoFocus
         className="search-input"
-        placeholder="เช่น 1234"
+        placeholder={t.codePlaceholder}
         value={code}
         onChange={(e) => onCodeChange(e.target.value)}
       />
@@ -103,14 +113,45 @@ export default function UploadPage() {
       {error && <p className="error-text">{error}</p>}
 
       <input
-        ref={inputRef}
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="visually-hidden"
+        disabled={!codeReady}
+        onChange={(e) => {
+          onFilesSelected(e.target.files);
+          e.target.value = "";
+        }}
+      />
+      <input
+        ref={libraryInputRef}
         type="file"
         accept="image/*"
         multiple
-        className="file-input"
-        disabled={code.length !== 4 || busy}
+        className="visually-hidden"
+        disabled={!codeReady}
         onChange={(e) => onFilesSelected(e.target.files)}
       />
+
+      <div className="upload-actions">
+        <button
+          type="button"
+          className="btn-primary"
+          disabled={!codeReady}
+          onClick={() => cameraInputRef.current?.click()}
+        >
+          📷 {items.some((it) => it.status === "done") ? t.takePhotoAgain : t.takePhoto}
+        </button>
+        <button
+          type="button"
+          className="btn-secondary-lg"
+          disabled={!codeReady}
+          onClick={() => libraryInputRef.current?.click()}
+        >
+          🖼️ {t.chooseFromLibrary}
+        </button>
+      </div>
 
       {items.length > 0 && (
         <div className="grid">
@@ -118,10 +159,10 @@ export default function UploadPage() {
             <div key={it.name} className="thumb upload-thumb">
               <img src={it.url} alt="" />
               <span className={`badge badge-${it.status}`}>
-                {it.status === "compressing" && "กำลังย่อ..."}
-                {it.status === "uploading" && "กำลังอัพ..."}
-                {it.status === "done" && "สำเร็จ"}
-                {it.status === "error" && "ผิดพลาด"}
+                {it.status === "compressing" && t.statusCompressing}
+                {it.status === "uploading" && t.statusUploading}
+                {it.status === "done" && t.statusDone}
+                {it.status === "error" && t.statusError}
               </span>
             </div>
           ))}
@@ -129,8 +170,8 @@ export default function UploadPage() {
       )}
 
       {items.length > 0 && !busy && (
-        <button className="btn-primary" onClick={startNext}>
-          อัพรหัสถัดไป
+        <button className="btn-primary" style={{ marginTop: 16 }} onClick={startNext}>
+          {t.nextCode}
         </button>
       )}
     </div>

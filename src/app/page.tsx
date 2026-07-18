@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useLang } from "@/lib/i18n";
+import { LangToggle } from "@/lib/LangToggle";
 
 type Item = { url: string; uploadedAt: string; code?: string };
 
 export default function HomePage() {
+  const { lang, setLang, t } = useLang();
   const [code, setCode] = useState("");
   const [searched, setSearched] = useState<string | null>(null);
   const [results, setResults] = useState<Item[] | null>(null);
@@ -13,6 +16,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [deletingCode, setDeletingCode] = useState(false);
 
   useEffect(() => {
     fetch("/api/recent")
@@ -60,7 +64,7 @@ export default function HomePage() {
   }
 
   async function deleteImage(url: string) {
-    if (!confirm("ลบรูปนี้?")) return;
+    if (!confirm(t.confirmDeletePhoto)) return;
     setDeleting(true);
     const res = await fetch("/api/delete", {
       method: "POST",
@@ -75,13 +79,32 @@ export default function HomePage() {
     }
   }
 
+  async function deleteWholeCode() {
+    if (!searched || !results) return;
+    if (!confirm(t.confirmDeleteCode(searched, results.length))) return;
+    setDeletingCode(true);
+    const res = await fetch("/api/delete-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: searched }),
+    });
+    setDeletingCode(false);
+    if (res.ok) {
+      setRecent((prev) => prev.filter((it) => it.code !== searched));
+      clearSearch();
+    }
+  }
+
   return (
     <div className="container">
       <header className="topbar">
-        <h1 className="app-title">ค้นหากล่องสินค้า</h1>
-        <Link href="/upload" className="btn-secondary">
-          + อัพโหลด
-        </Link>
+        <h1 className="app-title">{t.appTitle}</h1>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <LangToggle lang={lang} setLang={setLang} />
+          <Link href="/upload" className="btn-secondary">
+            {t.uploadBtn}
+          </Link>
+        </div>
       </header>
 
       <input
@@ -91,43 +114,44 @@ export default function HomePage() {
         maxLength={4}
         autoFocus
         className="search-input"
-        placeholder="รหัส 4 ตัวท้าย"
+        placeholder={t.searchPlaceholder}
         value={code}
         onChange={(e) => onChange(e.target.value)}
       />
 
-      {loading && <p className="hint-text">กำลังค้นหา...</p>}
+      {loading && <p className="hint-text">{t.searching}</p>}
 
       {!loading && searched && results && results.length === 0 && (
         <>
           <button className="btn-back" onClick={clearSearch}>
-            ← กลับ
+            ← {t.back}
           </button>
-          <p className="empty-text">ไม่พบรหัสสินค้า ติดต่อผู้ดูแล</p>
+          <p className="empty-text">{t.notFound}</p>
         </>
       )}
 
       {!loading && results && results.length > 0 && (
         <section>
           <button className="btn-back" onClick={clearSearch}>
-            ← กลับ
+            ← {t.back}
           </button>
-          <h2 className="section-title">
-            รหัส {searched} — {results.length} รูป
-          </h2>
+          <h2 className="section-title">{t.resultsTitle(searched ?? "", results.length)}</h2>
           <div className="grid">
             {results.map((item) => (
               <button key={item.url} className="thumb" onClick={() => setLightbox(item.url)}>
-                <img src={item.url} alt={`สินค้า ${searched}`} loading="lazy" />
+                <img src={item.url} alt={`${searched}`} loading="lazy" />
               </button>
             ))}
           </div>
+          <button className="btn-delete-code" disabled={deletingCode} onClick={deleteWholeCode}>
+            {deletingCode ? t.deletingCode : t.deleteCode}
+          </button>
         </section>
       )}
 
       {!searched && recentGroups.length > 0 && (
         <section>
-          <h2 className="section-title">อัพโหลดล่าสุด</h2>
+          <h2 className="section-title">{t.recentTitle}</h2>
           <div className="grid">
             {recentGroups.map((group) => (
               <button
@@ -138,8 +162,8 @@ export default function HomePage() {
                   runSearch(group.code);
                 }}
               >
-                <img src={group.cover} alt={`สินค้า ${group.code}`} loading="lazy" />
-                {group.count > 1 && <span className="thumb-count">{group.count} รูป</span>}
+                <img src={group.cover} alt={group.code} loading="lazy" />
+                {group.count > 1 && <span className="thumb-count">{t.photosCount(group.count)}</span>}
                 <span className="thumb-code">{group.code}</span>
               </button>
             ))}
@@ -158,7 +182,7 @@ export default function HomePage() {
               deleteImage(lightbox);
             }}
           >
-            {deleting ? "กำลังลบ..." : "ลบรูปนี้"}
+            {deleting ? t.deletingPhoto : t.deletePhoto}
           </button>
         </div>
       )}
