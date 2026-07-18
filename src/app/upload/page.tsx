@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { upload } from "@vercel/blob/client";
 import imageCompression from "browser-image-compression";
@@ -19,12 +19,28 @@ export default function UploadPage() {
   const [items, setItems] = useState<PreviewItem[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [existingCount, setExistingCount] = useState<number | null>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const libraryInputRef = useRef<HTMLInputElement>(null);
 
   function onCodeChange(v: string) {
     setCode(v.replace(/\D/g, "").slice(0, 4));
+    setExistingCount(null);
   }
+
+  useEffect(() => {
+    if (!/^\d{4}$/.test(code)) return;
+    let cancelled = false;
+    fetch(`/api/search?code=${code}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled) setExistingCount((data.items ?? []).length);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [code]);
 
   async function onFilesSelected(fileList: FileList | null) {
     if (!fileList || fileList.length === 0) return;
@@ -79,6 +95,7 @@ export default function UploadPage() {
     setCode("");
     setItems([]);
     setError(null);
+    setExistingCount(null);
     if (cameraInputRef.current) cameraInputRef.current.value = "";
     if (libraryInputRef.current) libraryInputRef.current.value = "";
   }
@@ -111,6 +128,10 @@ export default function UploadPage() {
       />
 
       {error && <p className="error-text">{error}</p>}
+
+      {existingCount !== null && existingCount > 0 && (
+        <p className="warning-text">{t.codeExists(existingCount)}</p>
+      )}
 
       <input
         ref={cameraInputRef}

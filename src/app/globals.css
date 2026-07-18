@@ -216,6 +216,17 @@ input {
   margin: 0;
 }
 
+.warning-text {
+  background: #fef9c3;
+  color: #713f12;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
 .hint-text {
   color: var(--muted);
   text-align: center;
