@@ -204,6 +204,19 @@ input {
   padding: 32px 0;
 }
 
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 8px 0;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
 .section-title {
   font-size: 15px;
   font-weight: 700;

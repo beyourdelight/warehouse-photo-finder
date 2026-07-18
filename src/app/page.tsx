@@ -42,6 +42,12 @@ export default function HomePage() {
     setLoading(false);
   }
 
+  function clearSearch() {
+    setCode("");
+    setResults(null);
+    setSearched(null);
+  }
+
   function onChange(v: string) {
     const digits = v.replace(/\D/g, "").slice(0, 4);
     setCode(digits);
@@ -93,11 +99,19 @@ export default function HomePage() {
       {loading && <p className="hint-text">กำลังค้นหา...</p>}
 
       {!loading && searched && results && results.length === 0 && (
-        <p className="empty-text">ไม่พบรหัสสินค้า ติดต่อผู้ดูแล</p>
+        <>
+          <button className="btn-back" onClick={clearSearch}>
+            ← กลับ
+          </button>
+          <p className="empty-text">ไม่พบรหัสสินค้า ติดต่อผู้ดูแล</p>
+        </>
       )}
 
       {!loading && results && results.length > 0 && (
         <section>
+          <button className="btn-back" onClick={clearSearch}>
+            ← กลับ
+          </button>
           <h2 className="section-title">
             รหัส {searched} — {results.length} รูป
           </h2>
