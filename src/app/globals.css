@@ -228,15 +228,41 @@ input {
   padding: 32px 0;
 }
 
-.lang-toggle {
-  background: var(--card-bg);
-  color: var(--primary);
+.lang-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 64px;
+  height: 32px;
+  padding: 0 6px;
+  background: #f3e8ff;
   border: 2px solid var(--primary);
   border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 700;
   cursor: pointer;
+}
+
+.lang-switch-flag {
+  font-size: 14px;
+  line-height: 1;
+  z-index: 1;
+}
+
+.lang-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.18s ease;
+}
+
+.lang-switch-thumb-en {
+  transform: translateX(32px);
 }
 
 .btn-back {

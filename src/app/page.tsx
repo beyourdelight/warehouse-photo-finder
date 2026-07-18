@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import { LangToggle } from "@/lib/LangToggle";
@@ -17,13 +17,41 @@ export default function HomePage() {
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deletingCode, setDeletingCode] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  function loadRecent(offset: number) {
+    setLoadingMore(true);
+    fetch(`/api/recent?offset=${offset}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setRecent((prev) => (offset === 0 ? data.items ?? [] : [...prev, ...(data.items ?? [])]));
+        setHasMore(Boolean(data.hasMore));
+      })
+      .catch(() => {})
+      .finally(() => setLoadingMore(false));
+  }
 
   useEffect(() => {
-    fetch("/api/recent")
-      .then((r) => r.json())
-      .then((data) => setRecent(data.items ?? []))
-      .catch(() => {});
+    queueMicrotask(() => loadRecent(0));
   }, []);
+
+  useEffect(() => {
+    if (searched || !hasMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loadingMore) {
+          loadRecent(recent.length);
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [searched, hasMore, loadingMore, recent.length]);
 
   const recentGroups: { code: string; cover: string; count: number }[] = [];
   for (const item of recent) {
@@ -168,6 +196,7 @@ export default function HomePage() {
               </button>
             ))}
           </div>
+          {hasMore && <div ref={sentinelRef} className="hint-text">{t.loadingMore}</div>}
         </section>
       )}
 

@@ -6,10 +6,15 @@ export function LangToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) =
   return (
     <button
       type="button"
-      className="lang-toggle"
+      role="switch"
+      aria-checked={lang === "en"}
+      aria-label="Language"
+      className="lang-switch"
       onClick={() => setLang(lang === "th" ? "en" : "th")}
     >
-      {lang === "th" ? "EN" : "TH"}
+      <span className="lang-switch-flag">🇹🇭</span>
+      <span className="lang-switch-flag">🇬🇧</span>
+      <span className={`lang-switch-thumb ${lang === "en" ? "lang-switch-thumb-en" : ""}`} />
     </button>
   );
 }

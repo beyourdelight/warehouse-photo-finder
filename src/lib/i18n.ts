@@ -20,6 +20,7 @@ export const dict = {
     confirmDeleteCode: (code: string, count: number) =>
       `ลบรูปทั้งหมด ${count} รูปของรหัส ${code}? ย้อนกลับไม่ได้`,
     recentTitle: "อัพโหลดล่าสุด",
+    loadingMore: "กำลังโหลดเพิ่ม...",
     photosCount: (n: number) => `${n} รูป`,
     deletePhoto: "ลบรูปนี้",
     deletingPhoto: "กำลังลบ...",
@@ -57,6 +58,7 @@ export const dict = {
     confirmDeleteCode: (code: string, count: number) =>
       `Delete all ${count} photo(s) for code ${code}? This can't be undone.`,
     recentTitle: "Recent uploads",
+    loadingMore: "Loading more...",
     photosCount: (n: number) => `${n} photos`,
     deletePhoto: "Delete this photo",
     deletingPhoto: "Deleting...",
