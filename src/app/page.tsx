@@ -21,6 +21,17 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
+  const recentGroups: { code: string; cover: string; count: number }[] = [];
+  for (const item of recent) {
+    if (!item.code) continue;
+    const existing = recentGroups.find((g) => g.code === item.code);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      recentGroups.push({ code: item.code, cover: item.url, count: 1 });
+    }
+  }
+
   async function runSearch(value: string) {
     if (!/^\d{4}$/.test(value)) return;
     setLoading(true);
@@ -100,19 +111,22 @@ export default function HomePage() {
         </section>
       )}
 
-      {!searched && recent.length > 0 && (
+      {!searched && recentGroups.length > 0 && (
         <section>
           <h2 className="section-title">อัพโหลดล่าสุด</h2>
           <div className="grid">
-            {recent.map((item) => (
+            {recentGroups.map((group) => (
               <button
-                key={item.url}
+                key={group.code}
                 className="thumb"
-                onClick={() => setLightbox(item.url)}
-                title={item.code}
+                onClick={() => {
+                  setCode(group.code);
+                  runSearch(group.code);
+                }}
               >
-                <img src={item.url} alt={`สินค้า ${item.code}`} loading="lazy" />
-                <span className="thumb-code">{item.code}</span>
+                <img src={group.cover} alt={`สินค้า ${group.code}`} loading="lazy" />
+                {group.count > 1 && <span className="thumb-count">{group.count} รูป</span>}
+                <span className="thumb-code">{group.code}</span>
               </button>
             ))}
           </div>
